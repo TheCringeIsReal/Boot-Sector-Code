@@ -1,4 +1,4 @@
-mov bx, hello
+mov bx, BOOT_MSG
 call print_string
 mov bx, 0xff58
 call print_hex
@@ -6,8 +6,8 @@ call print_hex
 %include "print/print_string.asm"
 %include "print/print_hex.asm"
 
-hello:
-	db 'Hello World',0
+BOOT_MSG:
+	db 'REDRUM',0
 HEX_OUT:
 	db 'aaaa',0
 
