@@ -1,6 +1,5 @@
 print_string:
 	mov ah, 0x0e
-	add bx, 0x7c00
 	
 	start:
 		mov al, [bx]
