@@ -16,13 +16,13 @@ put_hex:
 	shr bx, 12
 	cmp bx, 0x0009
 	jg big
-	add bx, '0'
+	add bl, '0'
 	mov al, bl
 	int 0x10
 	popa
 	ret
 	big:
-		add bx, 'A' - 10
+		add bl, 0x57
 		mov al, bl
 		int 0x10
 		popa

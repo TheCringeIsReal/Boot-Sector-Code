@@ -1,31 +1,35 @@
-; Read  some  sectors  from  the  boot  disk  using  our  disk_read  function
-[org 0x7c00]
-mov dl, [BOOT_DRIVE] ; BIOS  stores  our  boot  drive  in DL, so it’s
-; best to  remember  this  for  later.
-mov bp, 0x8000         ; Here we set our  stack  safely  out of the
-mov sp, bp             ; way , at 0x8000
-mov bx, 0x9000         ; Load 5 sectors  to 0x0000(ES):0 x9000(BX)
-mov dh, 5               ; from  the  boot  disk.
-mov dl, [BOOT_DRIVE]
-call  disk_load
-mov dx, [0x9000]      ; Print  out  the  first  loaded  word , which
-call  print_hex         ; we  expect  to be 0xdada , stored
-; at  address 0x9000
-mov dx, [0x9000 + 512] ; Also , print  the  first  word  from  the
-call  print_hex           ; 2nd  loaded  sector: should  be 0xface
-jmp $
-%include "print/print_string.asm" ; Re -use  our  print_string  function
-%include "print/print_hex.asm"       ; Re-use  our  print_hex  function
-%include "readmemory.asm"
-; Include  our new  disk_load  function
+; actually  read in AL is not  equal  to the  number  we  expected.
+;cmp al, 1 
+;jne  disk_error
+;disk_error :
+;mov bx, DISK_ERROR_MSG
+;call  print_string
+;jmp $
 ; Global  variables
-BOOT_DRIVE: db 0
-; Boot sector  padding
-times  510-($-$$) db 0
-dw 0xaa55
-; We know  that  BIOS  will  load  only  the  first 512-byte  sector  from  the disk ,
-; so if we  purposely  add a few  more  sectors  to our  code by  repeating  some
-; familiar  numbers , we can  prove  to  ourselfs  that we  actually  loaded  those
-; additional  two  sectors  from  the  disk we  booted  from.
-times  256 dw 0xdada
-times  256 dw 0xface
+;DISK_ERROR_MSG:   db "Disk  read  error!", 0
+
+
+
+; load DH  sectors  to ES:BX from  drive  DL
+disk_load:
+	push dx           ; Store  DX on  stack  so  later  we can  recall
+	; how  many  sectors  were  request  to be read ,
+	; even if it is  altered  in the  meantime
+	mov ah, 0x02     ; BIOS  read  sector  function
+	mov al, dh       ; Read DH  sectors
+	mov ch, 0x00     ; Select  cylinder 0
+	mov dh, 0x00     ; Select  head 0
+	mov cl, 0x02     ; Start  reading  from  second  sector (i.e.
+	; after  the  boot  sector)
+	int 0x13          ; BIOS  interrupt
+	;jc  disk_error    ; Jump if error (i.e.  carry  flag  set)
+	pop dx            ; Restore  DX from  the  stack
+	;cmp dh, al       ; if AL (sectors  read) != DH (sectors  expected)
+	;jne  disk_error   ;    display  error  message
+	ret
+	;disk_error :
+	;mov bx, DISK_ERROR_MSG
+	;call  print_string
+	;jmp $
+	; Variables
+	; DISK_ERROR_MSG   db "Disk  read  error!", 0

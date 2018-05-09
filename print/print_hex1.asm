@@ -1,0 +1,6 @@
+print_hex:
+	mov ah, 0x0e
+	and bl, 0x0f
+	add al, 0x38
+	mov al, bl
+	int 0x80
