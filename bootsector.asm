@@ -12,7 +12,7 @@ jmp $
 %include "lgdt.asm"
 [bits  32]
 
-; This is  where we  arrive  after  switching  to and  initialising  protected
+; This is where we arrive after switching to and initialising protected
 ; mode.
 BEGIN_PM:
 mov ebx , MSG_PROT_MODE
