@@ -1,6 +1,8 @@
 /* define an empty function that returns an interger. */
+#include<stdio.h>
 
-int my_function()
+int main()
 {
-	return 0xbaba;
+	printf("%c\n", 0x6f);
+	return 0;
 }
